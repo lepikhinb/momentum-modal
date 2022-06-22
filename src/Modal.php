@@ -1,12 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Momentum\Modal;
 
 use Illuminate\Contracts\Support\Responsable;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Inertia\Response;
 
 class Modal implements Responsable
 {
@@ -18,7 +18,7 @@ class Modal implements Responsable
     ) {
     }
 
-    public function baseRoute(string $name, mixed $parameters = [], bool $absolute = true): Response
+    public function baseRoute(string $name, mixed $parameters = [], bool $absolute = true): mixed
     {
         $this->baseURL = route($name, $parameters, $absolute);
 
@@ -32,8 +32,9 @@ class Modal implements Responsable
         return $this;
     }
 
-    public function render(): Response|RedirectResponse
+    public function render(): mixed
     {
+        /** @phpstan-ignore-next-line */
         inertia()->share(['modal' => $this->component()]);
 
         /** @var Request $originalRequest */
@@ -42,10 +43,10 @@ class Modal implements Responsable
         $request = Request::create(
             $this->baseURL,
             Request::METHOD_GET,
-            $originalRequest->query(),
-            $originalRequest->cookie(),
-            $originalRequest->file(),
-            $originalRequest->server(),
+            $originalRequest->query->all(),
+            $originalRequest->cookies->all(),
+            $originalRequest->files->all(),
+            $originalRequest->server->all(),
             $originalRequest->getContent()
         );
 
@@ -62,7 +63,7 @@ class Modal implements Responsable
             'component' => $this->component,
             'baseURL' => $this->baseURL,
             'props' => $this->props,
-            'inertia' => request()->inertia(),
+            'inertia' => request()->inertia(), // @phpstan-ignore-line
         ];
     }
 

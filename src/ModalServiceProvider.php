@@ -9,10 +9,6 @@ use Inertia\ResponseFactory;
 
 class ModalServiceProvider extends ServiceProvider
 {
-    public function register(): void
-    {
-    }
-
     public function boot(): void
     {
         ResponseFactory::macro('modal', function (
