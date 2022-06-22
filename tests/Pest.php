@@ -11,7 +11,7 @@
 |
 */
 
-uses(ArchTech\REPLACE\Tests\TestCase::class)->in('Pest');
+uses(Momentum\Modal\Tests\TestCase::class)->in('Pest');
 
 /*
 |--------------------------------------------------------------------------

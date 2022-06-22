@@ -16,24 +16,11 @@ offer_run() {
     exit 1
 }
 
-if (php-cs-fixer fix --dry-run --config=.php-cs-fixer.php > /dev/null 2>/dev/null); then
-    echo '✅ php-cs-fixer OK'
+if (./vendor/bin/pint > /dev/null 2>/dev/null); then
+    echo '✅ Pint OK'
 else
-    read -p "⚠️ php-cs-fixer found issues. Fix (Y/n)? " fix
-    case ${fix:0:1} in
-        n|N )
-            echo '❌ php-cs-fixer FAIL'
-            offer_run 'php-cs-fixer fix --config=.php-cs-fixer.php'
-        ;;
-        * )
-            if (php-cs-fixer fix --config=.php-cs-fixer.php > /dev/null 2>/dev/null); then
-                echo '✅ php-cs-fixer OK'
-            else
-                echo '❌ php-cs-fixer FAIL'
-                offer_run 'php-cs-fixer fix --config=.php-cs-fixer.php'
-            fi
-        ;;
-    esac
+    echo '❌ Pint FAIL'
+    offer_run './vendor/bin/pint'
 fi
 
 if (./vendor/bin/phpstan analyse > /dev/null 2>/dev/null); then
@@ -42,8 +29,6 @@ else
     echo '❌ PHPStan FAIL'
     offer_run './vendor/bin/phpstan analyse'
 fi
-
-(MYSQL_PORT=3307 docker-compose up -d > /dev/null 2>/dev/null) || true
 
 if (./vendor/bin/pest > /dev/null 2>/dev/null); then
     echo '✅ PEST OK'

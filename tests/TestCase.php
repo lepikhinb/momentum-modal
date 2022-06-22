@@ -1,16 +1,16 @@
 <?php
 
-namespace ArchTech\REPLACE\Tests;
+namespace Momentum\Modal\Tests;
 
 use Orchestra\Testbench\TestCase as TestbenchTestCase;
-use ArchTech\REPLACE\REPLACEServiceProvider;
+use Momentum\Modal\ModalServiceProvider;
 
 class TestCase extends TestbenchTestCase
 {
     protected function getPackageProviders($app)
     {
         return [
-            REPLACEServiceProvider::class,
+            ModalServiceProvider::class,
         ];
     }
 }
