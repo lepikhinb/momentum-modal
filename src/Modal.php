@@ -7,6 +7,7 @@ namespace Momentum\Modal;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 class Modal implements Responsable
 {
@@ -18,11 +19,11 @@ class Modal implements Responsable
     ) {
     }
 
-    public function baseRoute(string $name, mixed $parameters = [], bool $absolute = true): mixed
+    public function baseRoute(string $name, mixed $parameters = [], bool $absolute = true): static
     {
         $this->baseURL = route($name, $parameters, $absolute);
 
-        return $this->render();
+        return $this;
     }
 
     public function props(array $props): static
@@ -52,18 +53,17 @@ class Modal implements Responsable
 
         $baseRoute = Route::getRoutes()->match($request);
 
-        $response = app()->call($baseRoute->getAction('uses'));
-
-        return $response;
+        return app()->call($baseRoute->getAction('uses'));
     }
 
-    public function component(): array
+    protected function component(): array
     {
         return [
             'component' => $this->component,
             'baseURL' => $this->baseURL,
             'props' => $this->props,
             'inertia' => request()->inertia(), // @phpstan-ignore-line
+            'key' => request()->header('X-Inertia-Modal', Str::uuid()->toString()),
         ];
     }
 
