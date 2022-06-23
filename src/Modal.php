@@ -62,7 +62,7 @@ class Modal implements Responsable
             'component' => $this->component,
             'baseURL' => $this->baseURL,
             'props' => $this->props,
-            'inertia' => request()->inertia(), // @phpstan-ignore-line
+            'inertia' => (bool) request()->header('X-Inertia'),
             'key' => request()->header('X-Inertia-Modal', Str::uuid()->toString()),
         ];
     }
