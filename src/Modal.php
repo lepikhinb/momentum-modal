@@ -59,6 +59,9 @@ class Modal implements Responsable
             $originalRequest->query->all()
         );
 
+        // swap request to preserve original query
+        app()->instance('request', $request);
+
         $baseRoute = Route::getRoutes()->match($request);
 
         return app()->call($baseRoute->getAction('uses'));
