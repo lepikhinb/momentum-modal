@@ -8,6 +8,7 @@ use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class Modal implements Responsable
 {
@@ -26,7 +27,12 @@ class Modal implements Responsable
         return $this;
     }
 
-    public function props(array $props): static
+    public function basePageRoute(string $name, mixed $parameters = [], bool $absolute = true): static
+    {
+        return $this->baseRoute($name, $parameters, $absolute);
+    }
+
+    public function with(array $props): static
     {
         $this->props = $props;
 
@@ -38,17 +44,19 @@ class Modal implements Responsable
         /** @phpstan-ignore-next-line */
         inertia()->share(['modal' => $this->component()]);
 
+        // render background component on first visit
+        if (request()->header('X-Inertia') && request()->header('X-Inertia-Partial-Component')) {
+            /** @phpstan-ignore-next-line */
+            return Inertia::render(request()->header('X-Inertia-Partial-Component'));
+        }
+
         /** @var Request $originalRequest */
         $originalRequest = app('request');
 
-        $request = Request::create(
-            $this->baseURL,
+        $request = $originalRequest->create(
+            $this->backgroundURL(),
             Request::METHOD_GET,
-            $originalRequest->query->all(),
-            $originalRequest->cookies->all(),
-            $originalRequest->files->all(),
-            $originalRequest->server->all(),
-            $originalRequest->getContent()
+            $originalRequest->query->all()
         );
 
         $baseRoute = Route::getRoutes()->match($request);
@@ -61,14 +69,44 @@ class Modal implements Responsable
         return [
             'component' => $this->component,
             'baseURL' => $this->baseURL,
+            'redirectURL' => $this->redirectURL(),
             'props' => $this->props,
-            'inertia' => (bool) request()->header('X-Inertia'),
-            'key' => request()->header('X-Inertia-Modal', Str::uuid()->toString()),
+            'key' => request()->header('X-Inertia-Modal-Key', Str::uuid()->toString()),
+            'nonce' => Str::uuid()->toString(),
         ];
+    }
+
+    protected function backgroundURL(): string
+    {
+        if (request()->header('X-Inertia')) {
+            return $this->redirectURL();
+        }
+
+        return $this->baseURL;
+    }
+
+    protected function redirectURL(): string
+    {
+        if (request()->header('X-Inertia-Modal-Redirect')) {
+            /** @phpstan-ignore-next-line */
+            return request()->header('X-Inertia-Modal-Redirect');
+        }
+
+        if (url()->previous() != url()->current()) {
+            return url()->previous();
+        }
+
+        return $this->baseURL;
     }
 
     public function toResponse($request)
     {
-        return $this->render()->toResponse($request);
+        $response = $this->render();
+
+        if ($response instanceof Responsable) {
+            return $response->toResponse($request);
+        }
+
+        return $response;
     }
 }
