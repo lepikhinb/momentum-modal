@@ -15,7 +15,7 @@ class Modal implements Responsable
     protected string $baseURL;
 
     public function __construct(
-        protected ?string $component = null,
+        protected string $component,
         protected array $props = []
     ) {
     }
