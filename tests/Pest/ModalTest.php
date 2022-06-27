@@ -50,7 +50,7 @@ test('pass raw data without model bindings', function () {
                 ->where('modal.props.user', $user)
                 ->where('modal.props.tweet', $tweet);
         });
-})->only();
+});
 
 test('preserve background on inertia visits', function () {
     $user = user();
