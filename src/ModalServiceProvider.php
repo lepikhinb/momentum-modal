@@ -23,9 +23,7 @@ class ModalServiceProvider extends ServiceProvider
     }
 
     /**
-     * Extra macros for compatibility with the unreleased official feature
-     * 
-     * @return void 
+     * Extra macros for compatibility with the unreleased official feature.
      */
     public function registerCompatibilityMacros(): void
     {
@@ -37,6 +35,7 @@ class ModalServiceProvider extends ServiceProvider
         });
 
         Response::macro('stackable', function () {
+            /** @phpstan-ignore-next-line */
             return new Modal($this->component, $this->props);
         });
     }
