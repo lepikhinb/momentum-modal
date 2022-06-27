@@ -11,7 +11,8 @@
   ],
   "autoload": {
     "psr-4": {
-      "Momentum\\Modal\\": "src/"
+      "Momentum\\Modal\\": "src/",
+      "Momentum\\Modal\\Tests\\": "tests/"
     }
   },
   "autoload-dev": {
