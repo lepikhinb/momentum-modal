@@ -9,16 +9,31 @@ use Inertia\Inertia;
 
 class ExampleController
 {
-    public function user(Request $request, $user)
+    public function user(Request $request, User $user)
     {
         return Inertia::render('Users/Show', ['user' => $user, 'page' => $request->input('page')]);
     }
 
-    public function tweet($user, $tweet)
+    public function tweet(User $user, Tweet $tweet)
     {
         return Inertia::modal('Tweets/Show', [
-            'user' => $user, 'tweet' => $tweet,
+            'user' => $user,
+            'tweet' => $tweet,
         ])
             ->baseRoute('users.show', $user);
+    }
+
+    public function rawUser(string $user)
+    {
+        return Inertia::render('Users/Show', ['user' => $user]);
+    }
+
+    public function rawTweet($user, $tweet)
+    {
+        return Inertia::modal('Tweets/Show', [
+            'user' => $user,
+            'tweet' => $tweet,
+        ])
+            ->baseRoute('raw.users.show', $user);
     }
 }

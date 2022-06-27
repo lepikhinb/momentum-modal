@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 use Inertia\Testing\AssertableInertia;
@@ -11,43 +12,68 @@ use function Pest\Laravel\from;
 use function Pest\Laravel\get;
 
 beforeEach(function () {
-    Route::middleware([StartSession::class, ExampleMiddleware::class])
+    Route::middleware([StartSession::class, ExampleMiddleware::class, SubstituteBindings::class])
         ->group(function () {
             Route::get('/', fn () => '')->name('home');
+            Route::get('raw/{user}', [ExampleController::class, 'rawUser'])->name('raw.users.show');
+            Route::get('raw/{user}/{tweet}', [ExampleController::class, 'rawTweet'])->name('raw.users.tweets.show');
             Route::get('{user}', [ExampleController::class, 'user'])->name('users.show');
             Route::get('{user}/{tweet}', [ExampleController::class, 'tweet'])->name('users.tweets.show');
         });
 });
 
 test('modals can be rendered', function () {
-    get(route('users.tweets.show', [user(), tweet()]))
-        ->assertInertia(function (AssertableInertia $page) {
+    $user = user();
+    $tweet = tweet($user);
+
+    get(route('users.tweets.show', [$user, $tweet]))
+        ->assertSuccessful()
+        ->assertInertia(function (AssertableInertia $page) use ($user, $tweet) {
             $page->component('Users/Show')
-                ->where('modal.baseURL', route('users.show', user()))
+                ->where('modal.baseURL', route('users.show', $user))
                 ->where('modal.component', 'Tweets/Show')
-                ->where('modal.props', [
-                    'user' => user(),
-                    'tweet' => tweet(),
-                ]);
+                ->where('modal.props.user.username', $user->username)
+                ->where('modal.props.tweet.body', $tweet->body);
         });
 });
 
-test('preserve background on inertia visits', function () {
-    from(route('home'))
-        ->get(route('users.tweets.show', [user(), tweet()]))
-        ->assertInertia(function (AssertableInertia $page) {
+test('pass raw data without model bindings', function () {
+    $user = 'test-user';
+    $tweet = 'test-tweet';
+
+    get(route('raw.users.tweets.show', [$user, $tweet]))
+        ->assertSuccessful()
+        ->assertInertia(function (AssertableInertia $page) use ($user, $tweet) {
             $page->component('Users/Show')
-                ->where('user', user())
+                ->where('modal.baseURL', route('raw.users.show', $user))
+                ->where('modal.component', 'Tweets/Show')
+                ->where('modal.props.user', $user)
+                ->where('modal.props.tweet', $tweet);
+        });
+})->only();
+
+test('preserve background on inertia visits', function () {
+    $user = user();
+    $tweet = tweet($user);
+
+    from(route('home'))
+        ->get(route('users.tweets.show', [$user, $tweet]))
+        ->assertInertia(function (AssertableInertia $page) use ($user) {
+            $page->component('Users/Show')
+                ->where('user.username', $user->username)
                 ->where('modal.redirectURL', route('home'))
-                ->where('modal.baseURL', route('users.show', user()));
+                ->where('modal.baseURL', route('users.show', $user));
         });
 });
 
 test('preserve query string for parent componentы', function () {
-    $fromURL = route('users.show', ['user' => user(), 'page' => 3]);
+    $user = user();
+    $tweet = tweet($user);
+
+    $fromURL = route('users.show', ['user' => $user, 'page' => 3]);
 
     from($fromURL)
-        ->get(route('users.tweets.show', [user(), tweet()]), [
+        ->get(route('users.tweets.show', [$user, $tweet]), [
             'X-Inertia' => true,
             'X-Inertia-Modal-Redirect' => $fromURL,
         ])

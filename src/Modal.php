@@ -56,7 +56,11 @@ class Modal implements Responsable
         $request = $originalRequest->create(
             $this->backgroundURL(),
             Request::METHOD_GET,
-            $originalRequest->query->all()
+            $originalRequest->query->all(),
+            $originalRequest->cookies->all(),
+            $originalRequest->files->all(),
+            $originalRequest->server->all(),
+            $originalRequest->getContent()
         );
 
         // swap request to preserve original query
@@ -64,7 +68,7 @@ class Modal implements Responsable
 
         $baseRoute = Route::getRoutes()->match($request);
 
-        return app()->call($baseRoute->getAction('uses'), $baseRoute->parameters());
+        return app()->call($baseRoute->getAction('uses'), Route::current()?->parameters() ?? []);
     }
 
     protected function component(): array
