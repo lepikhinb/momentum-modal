@@ -37,6 +37,7 @@ test('preserve background on inertia visits', function () {
         ->get(route('users.tweets.show', [user(), tweet()]))
         ->assertInertia(function (AssertableInertia $page) {
             $page->component('Users/Show')
+                ->where('user', user())
                 ->where('modal.redirectURL', route('home'))
                 ->where('modal.baseURL', route('users.show', user()));
         });
