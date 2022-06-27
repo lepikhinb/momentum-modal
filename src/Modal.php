@@ -64,7 +64,7 @@ class Modal implements Responsable
 
         $baseRoute = Route::getRoutes()->match($request);
 
-        return app()->call($baseRoute->getAction('uses'));
+        return app()->call($baseRoute->getAction('uses'), $baseRoute->parameters());
     }
 
     protected function component(): array
