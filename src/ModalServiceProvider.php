@@ -17,5 +17,12 @@ class ModalServiceProvider extends ServiceProvider
         ) {
             return new Modal($component, $props);
         });
+
+        ResponseFactory::macro('dialog', function (
+            string $component,
+            array $props = []
+        ) {
+            return new Modal($component, $props);
+        });
     }
 }
