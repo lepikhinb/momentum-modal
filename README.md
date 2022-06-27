@@ -23,7 +23,7 @@ Check out the [demo app](https://modal.advanced-inertia.com) demonstrating the M
 Install the package into your Laravel app.
 
 ```bash
-composer require momentum-modal
+composer require based/momentum-modal
 ```
 
 ### Vue 3
