@@ -1,6 +1,6 @@
 # Momentum Modal
 
-Momentum Modal is a Laravel package that lets you implement backend-driven modal dialogs in Inertia apps.
+Momentum Modal is a Laravel package that lets you implement backend-driven modal dialogs for Inertia apps.
 
 Define modal routes on the backend and dynamically render them when you visit a dialog route.
 
