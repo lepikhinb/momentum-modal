@@ -53,7 +53,7 @@ class Modal implements Responsable
         /** @var Request $originalRequest */
         $originalRequest = app('request');
 
-        $request = $originalRequest->create(
+        $request = Request::create(
             $this->backgroundURL(),
             Request::METHOD_GET,
             $originalRequest->query->all(),
@@ -63,10 +63,16 @@ class Modal implements Responsable
             $originalRequest->getContent()
         );
 
-        // swap request to preserve original query
-        app()->instance('request', $request);
-
         $baseRoute = Route::getRoutes()->match($request);
+
+        $request->headers->replace($originalRequest->headers->all());
+
+        $request->setJson($originalRequest->json())
+            ->setUserResolver(fn () => $originalRequest->getUserResolver())
+            ->setRouteResolver(fn () => $baseRoute)
+            ->setLaravelSession($originalRequest->session());
+
+        app()->instance('request', $request);
 
         return app()->call($baseRoute->getAction('uses'), Route::current()?->parameters() ?? []);
     }
