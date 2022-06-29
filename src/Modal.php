@@ -97,7 +97,7 @@ class Modal implements Responsable
 
         $referer = request()->headers->get('referer');
 
-        if ($referer && $referer != url()->current()) {
+        if (request()->header('X-Inertia') && $referer && $referer != url()->current()) {
             return $referer;
         }
 
