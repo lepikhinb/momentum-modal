@@ -8,7 +8,6 @@ use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
-use Inertia\Inertia;
 
 class Modal implements Responsable
 {
@@ -47,14 +46,14 @@ class Modal implements Responsable
         // render background component on first visit
         if (request()->header('X-Inertia') && request()->header('X-Inertia-Partial-Component')) {
             /** @phpstan-ignore-next-line */
-            return Inertia::render(request()->header('X-Inertia-Partial-Component'));
+            return inertia()->render(request()->header('X-Inertia-Partial-Component'));
         }
 
         /** @var Request $originalRequest */
         $originalRequest = app('request');
 
         $request = Request::create(
-            $this->backgroundURL(),
+            $this->redirectURL(),
             Request::METHOD_GET,
             $originalRequest->query->all(),
             $originalRequest->cookies->all(),
@@ -89,15 +88,6 @@ class Modal implements Responsable
         ];
     }
 
-    protected function backgroundURL(): string
-    {
-        if (request()->header('X-Inertia')) {
-            return $this->redirectURL();
-        }
-
-        return $this->baseURL;
-    }
-
     protected function redirectURL(): string
     {
         if (request()->header('X-Inertia-Modal-Redirect')) {
@@ -105,8 +95,10 @@ class Modal implements Responsable
             return request()->header('X-Inertia-Modal-Redirect');
         }
 
-        if (url()->previous() != url()->current()) {
-            return url()->previous();
+        $referer = request()->headers->get('referer');
+
+        if ($referer && $referer != url()->current()) {
+            return $referer;
         }
 
         return $this->baseURL;

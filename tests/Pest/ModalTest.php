@@ -14,7 +14,7 @@ use function Pest\Laravel\get;
 beforeEach(function () {
     Route::middleware([StartSession::class, ExampleMiddleware::class, SubstituteBindings::class])
         ->group(function () {
-            Route::get('/', fn () => '')->name('home');
+            Route::get('/', fn () => inertia()->render('Home'))->name('home');
             Route::get('raw/{user}', [ExampleController::class, 'rawUser'])->name('raw.users.show');
             Route::get('raw/{user}/{tweet}', [ExampleController::class, 'rawTweet'])->name('raw.users.tweets.show');
             Route::get('{user}', [ExampleController::class, 'user'])->name('users.show');
@@ -52,15 +52,30 @@ test('pass raw data without model bindings', function () {
         });
 });
 
-test('preserve background on inertia visits', function () {
+test('preserve background on visits from parent', function () {
+    $user = user();
+    $tweet = tweet($user);
+
+    from(route('users.show', $user))
+        ->get(route('users.tweets.show', [$user, $tweet]))
+        ->assertSuccessful()
+        ->assertInertia(function (AssertableInertia $page) use ($user) {
+            $page->component('Users/Show')
+                ->where('user.username', $user->username)
+                ->where('modal.redirectURL', route('users.show', $user))
+                ->where('modal.baseURL', route('users.show', $user));
+        });
+});
+
+test('preserve background on visits from other pages', function () {
     $user = user();
     $tweet = tweet($user);
 
     from(route('home'))
         ->get(route('users.tweets.show', [$user, $tweet]))
+        ->assertSuccessful()
         ->assertInertia(function (AssertableInertia $page) use ($user) {
-            $page->component('Users/Show')
-                ->where('user.username', $user->username)
+            $page->component('Home')
                 ->where('modal.redirectURL', route('home'))
                 ->where('modal.baseURL', route('users.show', $user));
         });
