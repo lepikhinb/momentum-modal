@@ -23,6 +23,15 @@ class ExampleController
             ->baseRoute('users.show', $user);
     }
 
+    public function differentParameters(User $user, Tweet $tweet)
+    {
+        return Inertia::modal('Tweets/Show', [
+            'user' => $user,
+            'tweet' => $tweet,
+        ])
+            ->baseRoute('users.show', User::where('id', '<>', $user->id)->first());
+    }
+
     public function rawUser(string $user)
     {
         return Inertia::render('Users/Show', ['user' => $user]);

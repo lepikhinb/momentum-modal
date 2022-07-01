@@ -19,6 +19,8 @@ beforeEach(function () {
             Route::get('raw/{user}/{tweet}', [ExampleController::class, 'rawTweet'])->name('raw.users.tweets.show');
             Route::get('{user}', [ExampleController::class, 'user'])->name('users.show');
             Route::get('{user}/{tweet}', [ExampleController::class, 'tweet'])->name('users.tweets.show');
+
+            Route::get('different/{user}/{tweet}', [ExampleController::class, 'differentParameters'])->name('different.users.tweets.show');
         });
 });
 
@@ -98,4 +100,21 @@ test('preserve query string for parent componentы', function () {
         ->assertJsonPath('component', 'Users/Show')
         ->assertJsonPath('props.page', '3')
         ->assertJsonPath('props.modal.redirectURL', $fromURL);
+});
+
+test('route parameters are bound correctly', function () {
+    $fromURL = route('home');
+    $user = user();
+    $otherUser = user();
+    $tweet = tweet($user);
+
+    from($fromURL)
+        ->get(route('different.users.tweets.show', [$user, $tweet]))
+        ->assertSuccessful()
+        ->assertInertia(function (AssertableInertia $page) use ($otherUser) {
+            $page->component('Users/Show')
+                ->where('user.id', $otherUser->id)
+                ->where('modal.redirectURL', route('users.show', $otherUser))
+                ->where('modal.baseURL', route('users.show', $otherUser));
+        });
 });

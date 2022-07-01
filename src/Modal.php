@@ -6,7 +6,8 @@ namespace Momentum\Modal;
 
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 
 class Modal implements Responsable
@@ -62,7 +63,10 @@ class Modal implements Responsable
             $originalRequest->getContent()
         );
 
-        $baseRoute = Route::getRoutes()->match($request);
+        /** @var \Illuminate\Routing\Router */
+        $router = app('router');
+
+        $baseRoute = $router->getRoutes()->match($request);
 
         $request->headers->replace($originalRequest->headers->all());
 
@@ -73,7 +77,20 @@ class Modal implements Responsable
 
         app()->instance('request', $request);
 
-        return app()->call($baseRoute->getAction('uses'), Route::current()?->parameters() ?? []);
+        return $this->handleRoute($request, $baseRoute);
+    }
+
+    protected function handleRoute(Request $request, Route $route): mixed
+    {
+        /** @var \Illuminate\Routing\Router */
+        $router = app('router');
+
+        $middleware = new SubstituteBindings($router);
+
+        return $middleware->handle(
+            $request,
+            $route->run(...)
+        );
     }
 
     protected function component(): array
