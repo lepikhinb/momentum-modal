@@ -89,7 +89,9 @@ class Modal implements Responsable
 
         return $middleware->handle(
             $request,
-            $route->run(...)
+            function() use($route) {
+                return $route->run();
+            }
         );
     }
 
