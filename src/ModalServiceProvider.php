@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Momentum\Modal;
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Response;
 use Inertia\ResponseFactory;
@@ -14,7 +15,7 @@ class ModalServiceProvider extends ServiceProvider
     {
         ResponseFactory::macro('modal', function (
             string $component,
-            array $props = []
+            array|Arrayable $props = []
         ) {
             return new Modal($component, $props);
         });
@@ -29,7 +30,7 @@ class ModalServiceProvider extends ServiceProvider
     {
         ResponseFactory::macro('dialog', function (
             string $component,
-            array $props = []
+            array|Arrayable $props = []
         ) {
             return new Modal($component, $props);
         });
