@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Momentum\Modal;
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Middleware\SubstituteBindings;
@@ -16,7 +17,7 @@ class Modal implements Responsable
 
     public function __construct(
         protected string $component,
-        protected array $props = []
+        protected array|Arrayable $props = []
     ) {
     }
 
