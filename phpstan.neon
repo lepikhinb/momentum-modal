@@ -22,3 +22,4 @@ parameters:
         # - '#should return \$this#'
 
     checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
