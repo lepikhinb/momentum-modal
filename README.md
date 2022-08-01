@@ -38,6 +38,12 @@ npm i momentum-modal
 yarn add momentum-modal
 ```
 
+> **Warning**
+> The package utilizes `axios` under the hood. If your app is already using `axios` as a depdendency, make sure to lock it to the same version Inertia uses.
+> ```bash
+> npm i axios@0.21.4
+> ```
+
 ## Setup
 
 [Modal](https://github.com/lepikhinb/momentum-modal-plugin) is a **headless** component, meaning you have full control over its look, whether it's a modal dialog or a slide-over panel. You are free to use any 3rd-party solutions to power your modals, such as [Headless UI](https://github.com/tailwindlabs/headlessui).
