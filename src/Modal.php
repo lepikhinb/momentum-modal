@@ -42,8 +42,12 @@ class Modal implements Responsable
 
     public function render(): mixed
     {
+        $flatProps = [];
+        foreach ($this->props as $key => $prop) {
+            $flatProps['modal.props.'.$key] = $prop;
+        }
         /** @phpstan-ignore-next-line */
-        inertia()->share(['modal' => $this->component()]);
+        inertia()->share(['modal' => $this->component(), ...$flatProps]);
 
         // render background component on first visit
         if (request()->header('X-Inertia') && request()->header('X-Inertia-Partial-Component')) {
@@ -100,8 +104,7 @@ class Modal implements Responsable
             'component' => $this->component,
             'baseURL' => $this->baseURL,
             'redirectURL' => $this->redirectURL(),
-            'props' => $this->props,
-            'key' => request()->header('X-Inertia-Modal-Key', Str::uuid()->toString()),
+            'key' => request()->header('X-Inertia-Modal-Key') ?? Str::uuid()->toString(),
             'nonce' => Str::uuid()->toString(),
         ];
     }
