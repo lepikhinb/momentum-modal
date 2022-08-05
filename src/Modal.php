@@ -14,11 +14,13 @@ use Illuminate\Support\Str;
 class Modal implements Responsable
 {
     protected string $baseURL;
+    protected array $props = [];
 
     public function __construct(
         protected string $component,
-        protected array|Arrayable $props = []
+        array|Arrayable $props
     ) {
+        $this->props = $props instanceof Arrayable ? $props->toArray() : $props;
     }
 
     public function baseRoute(string $name, mixed $parameters = [], bool $absolute = true): static
