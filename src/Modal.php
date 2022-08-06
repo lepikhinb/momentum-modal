@@ -20,7 +20,7 @@ class Modal implements Responsable
         protected string $component,
         array|Arrayable $props
     ) {
-        $this->props = $props instanceof Arrayable ? $props->toArray() : $props;
+        $this->with($props);
     }
 
     public function baseRoute(string $name, mixed $parameters = [], bool $absolute = true): static
@@ -35,9 +35,9 @@ class Modal implements Responsable
         return $this->baseRoute($name, $parameters, $absolute);
     }
 
-    public function with(array $props): static
+    public function with(array|Arrayable $props): static
     {
-        $this->props = $props;
+        $this->props = $props instanceof Arrayable ? $props->toArray() : $props;
 
         return $this;
     }
