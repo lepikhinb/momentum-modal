@@ -33,6 +33,13 @@ class Modal implements Responsable
         return $this->baseRoute($name, $parameters, $absolute);
     }
 
+    public function baseURL(string $url): static
+    {
+        $this->baseURL = $url;
+
+        return $this;
+    }
+
     public function with(array $props): static
     {
         $this->props = $props;
