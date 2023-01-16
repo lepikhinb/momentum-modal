@@ -124,6 +124,10 @@ class Modal implements Responsable
 
     protected function redirectURL(): string
     {
+        if ($this->forceBase) {
+            return $this->baseURL;
+        }
+    
         if (request()->header('X-Inertia-Modal-Redirect')) {
             /** @phpstan-ignore-next-line */
             return request()->header('X-Inertia-Modal-Redirect');
@@ -131,7 +135,7 @@ class Modal implements Responsable
 
         $referer = request()->headers->get('referer');
 
-        if (request()->header('X-Inertia') && $referer && $referer != url()->current() && ! $this->forceBase) {
+        if (request()->header('X-Inertia') && $referer && $referer != url()->current()) {
             return $referer;
         }
 
