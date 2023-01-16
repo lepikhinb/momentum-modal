@@ -15,6 +15,8 @@ class Modal implements Responsable
 {
     protected string $baseURL;
 
+    protected bool $forceBase = false;
+
     public function __construct(
         protected string $component,
         protected array|Arrayable $props = []
@@ -36,6 +38,13 @@ class Modal implements Responsable
     public function baseURL(string $url): static
     {
         $this->baseURL = $url;
+
+        return $this;
+    }
+
+    public function forceBase(bool $force = true): static
+    {
+        $this->forceBase = $force;
 
         return $this;
     }
@@ -115,6 +124,10 @@ class Modal implements Responsable
 
     protected function redirectURL(): string
     {
+        if ($this->forceBase) {
+            return $this->baseURL;
+        }
+    
         if (request()->header('X-Inertia-Modal-Redirect')) {
             /** @phpstan-ignore-next-line */
             return request()->header('X-Inertia-Modal-Redirect');
