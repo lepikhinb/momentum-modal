@@ -22,8 +22,8 @@
   },
   "require": {
     "php": "^8.0",
-    "illuminate/support": "^8.24|^9.0",
-    "inertiajs/inertia-laravel": "~0.5"
+    "illuminate/support": "^8.24|^9.0|^10.0",
+    "inertiajs/inertia-laravel": "^0.6"
   },
   "require-dev": {
     "orchestra/testbench": "^6.9|^7.0",
