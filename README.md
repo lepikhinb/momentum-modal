@@ -41,7 +41,7 @@ yarn add momentum-modal
 > **Warning**
 > The package utilizes `axios` under the hood. If your app is already using `axios` as a dependency, make sure to lock it to the same version Inertia uses.
 > ```bash
-> npm i axios@0.21.4
+> npm i axios@1.2.0
 > ```
 
 ## Setup
