@@ -134,6 +134,23 @@ class ShowTweet extends Controller
 
 Find the example frontend implementation [here](https://github.com/lepikhinb/momentum-modal-plugin/tree/master/examples).
 
+### Using a custom Modal class
+
+If you need to customize the Modal class - for example, to tweak the modal response - you can do so by binding a different implementation to the service container:
+
+```php
+class CustomModal extends Momentum\Modal\Modal
+{
+    public function render($component, $props = [])
+    {
+        return parent::render($component, $props)
+            ->withViewData(['foo' => 'bar']);
+    }
+}
+
+app()->bind(Momentum\Modal\Modal::class, CustomModal::class);
+```
+
 ## Advanced Inertia
 
 [<img src="https://advanced-inertia.com/og.png" width="420px" />](https://advanced-inertia.com)
