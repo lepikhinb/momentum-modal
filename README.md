@@ -9,6 +9,7 @@ Check out the [demo app](https://modal.advanced-inertia.com) demonstrating the M
 - [**Installation**](#installation)
     - [**Laravel**](#laravel)
     - [**Vue 3**](#vue-3)
+    - [**React**](#react)
 - [**Setup**](#setup)
     - [**Vite**](#vite)
     - [**Laravel Mix**](#laravel-mix)
@@ -28,8 +29,6 @@ composer require based/momentum-modal
 
 ### Vue 3
 
-> The frontend package is only for Vue 3 now due to its adoption within the Laravel community.
-
 Install the frontend package.
 
 ```bash
@@ -40,6 +39,24 @@ yarn add momentum-modal
 
 > **Warning**
 > The package utilizes `axios` under the hood. If your app is already using `axios` as a dependency, make sure to lock it to the same version Inertia uses.
+>
+> ```bash
+> npm i axios@1.2.0
+> ```
+
+### React
+
+Install the frontend package.
+
+```bash
+npm i momentum-modal-react
+# or
+yarn add momentum-modal-react
+```
+
+> **Warning**
+> The package utilizes `axios` under the hood. If your app is already using `axios` as a dependency, make sure to lock it to the same version Inertia uses.
+>
 > ```bash
 > npm i axios@1.2.0
 > ```
@@ -49,6 +66,8 @@ yarn add momentum-modal
 [Modal](https://github.com/lepikhinb/momentum-modal-plugin) is a **headless** component, meaning you have full control over its look, whether it's a modal dialog or a slide-over panel. You are free to use any 3rd-party solutions to power your modals, such as [Headless UI](https://github.com/tailwindlabs/headlessui).
 
 Put the `Modal` component somewhere within the layout.
+
+### Vue 3 setup
 
 ```vue
 <script setup>
@@ -63,11 +82,27 @@ import { Modal } from 'momentum-modal'
 </template>
 ```
 
+### React setup
+
+```jsx
+import {Modal} from 'momentum-modal-react';
+
+export function Layout({children}) {
+  return (
+    <>
+      {children}
+      <Modal />
+    </>
+  );
+}
+```
+
 Set up a `modal` plugin with the same component resolver you use to render Inertia pages.
 
 ### Vite
 
 ```javascript
+// Vue
 import { modal } from "momentum-modal"
 
 createInertiaApp({
@@ -81,11 +116,28 @@ createInertiaApp({
       .mount(el)
   }
 })
+
+// React
+globalThis.resolveMomentumModal = (name) => {
+  const pages = import.meta.glob('./Pages/**/*.jsx', {eager: true});
+  return pages[`./Pages/${name}.jsx`];
+};
+
+createInertiaApp({
+  resolve: (name) => {
+    const pages = import.meta.glob('./Pages/**/*.jsx', {eager: true});
+    return pages[`./Pages/${name}.jsx`];
+  },
+  setup({el, App, props}) {
+    createRoot(el).render(<App {...props} />);
+  },
+});
 ```
 
 ### Laravel Mix
 
 ```javascript
+// Vue
 import { modal } from "momentum-modal"
 
 createInertiaApp({
@@ -99,6 +151,16 @@ createInertiaApp({
       .mount(el)
   }
 })
+
+// React
+globalThis.resolveMomentumModal = (name) => require(`./Pages/${name}`);
+
+createInertiaApp({
+  resolve: (name) => require(`./Pages/${name}`),
+  setup({el, App, props}) {
+    createRoot(el).render(<App {...props} />);
+  },
+});
 ```
 
 ## Usage
@@ -132,7 +194,7 @@ class ShowTweet extends Controller
 }
 ```
 
-Find the example frontend implementation [here](https://github.com/lepikhinb/momentum-modal-plugin/tree/master/examples).
+Find the example Vue 3 implementation [here](https://github.com/lepikhinb/momentum-modal-plugin/tree/master/examples).
 
 ## Advanced Inertia
 
@@ -152,8 +214,6 @@ Momentum is a set of packages designed to improve your experience building Inert
 - [Lock](https://github.com/lepikhinb/momentum-lock) — Frontend package to use Laravel permissions with Inertia
 - [Layout](https://github.com/lepikhinb/momentum-layout) — Persistent layouts for Vue 3 apps
 - [Vite Plugin Watch](https://github.com/lepikhinb/vite-plugin-watch) — Vite plugin to run shell commands on file changes
-
-## Credits
 
 ## Credits
 
