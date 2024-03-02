@@ -8,30 +8,46 @@ env:
 on:
   push:
   pull_request:
-    branches: [master]
+    branches:
+      - master
 
 jobs:
   pest:
     name: Tests (Pest) L${{ matrix.laravel }}
+
+
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        laravel: [8, 9]
+        laravel: [8, 9, '11']
+
 
     steps:
       - uses: actions/checkout@v2
+
+
       - name: Install composer dependencies
         run: composer require "illuminate/support:^${{ matrix.laravel }}.0"
+
+
       - name: Run tests
         run: vendor/bin/pest
 
   phpstan:
     name: Static analysis (PHPStan)
+
+
     runs-on: ubuntu-latest
+
 
     steps:
       - uses: actions/checkout@v2
+
+
       - name: Install composer dependencies
         run: composer install
+
+
       - name: Run phpstan
         run: vendor/bin/phpstan analyse
