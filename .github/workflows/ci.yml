@@ -42,7 +42,7 @@ jobs:
           coverage: none
 
       - name: Install composer dependencies
-        run: composer require "illuminate/support:^${{ matrix.laravel }}.0"
+        run: composer require "illuminate/support:^${{ matrix.laravel }}"
 
       - name: Run tests
         run: vendor/bin/pest
