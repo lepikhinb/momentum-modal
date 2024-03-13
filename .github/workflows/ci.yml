@@ -13,23 +13,37 @@ on:
 
 jobs:
   pest:
-    name: Tests (Pest) L${{ matrix.laravel }}
+    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
-
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        laravel: [8, 9, '11']
-
+        os: [ubuntu-latest]
+        laravel: [8, 9, 10, 11]
+        php: [8.1, 8.2, 8.3]
+        stability: [prefer-lowest, prefer-stable]
+        include:
+          - laravel: 10.*
+            testbench: ^8.20
+          - laravel: 11.*
+            testbench: ^9.0
+        exclude:
+          - php: 8.1
+            laravel: 11.*
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+          coverage: none
 
       - name: Install composer dependencies
         run: composer require "illuminate/support:^${{ matrix.laravel }}.0"
-
 
       - name: Run tests
         run: vendor/bin/pest
@@ -37,17 +51,35 @@ jobs:
   phpstan:
     name: Static analysis (PHPStan)
 
-
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        laravel: [8, 9, 10, 11]
+        php: [8.1, 8.2, 8.3]
+        stability: [prefer-lowest, prefer-stable]
+        include:
+          - laravel: 10.*
+            testbench: ^8.20
+          - laravel: 11.*
+            testbench: ^9.0
+        exclude:
+          - php: 8.1
+            laravel: 11.*
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+          coverage: none
 
       - name: Install composer dependencies
         run: composer install
-
 
       - name: Run phpstan
         run: vendor/bin/phpstan analyse
