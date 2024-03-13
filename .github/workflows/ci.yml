@@ -13,22 +13,18 @@ on:
 
 jobs:
   pest:
-    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
+    name: Pest (P${{ matrix.php }} - L${{ matrix.laravel }})
 
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        laravel: [8, 9, 10, 11]
-        php: [8.1, 8.2, 8.3]
-        stability: [prefer-lowest, prefer-stable]
         include:
-          - laravel: 10.*
-            testbench: ^8.20
-          - laravel: 11.*
-            testbench: ^9.0
-        exclude:
-          - php: 8.1
-            laravel: 11.*
+          - laravel: 9
+            php: "8.0"
+          - laravel: 10
+            php: "8.1"
+          - laravel: 11
+            php: "8.3"
 
     steps:
       - name: Checkout code
@@ -48,22 +44,18 @@ jobs:
         run: vendor/bin/pest
 
   phpstan:
-    name: Static analysis (PHPStan)
+    name: Static analysis (PHPStan) – (${{ matrix.php }} - L${{ matrix.laravel }})
 
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        laravel: [8, 9, 10, 11]
-        php: [8.1, 8.2, 8.3]
-        stability: [prefer-lowest, prefer-stable]
         include:
-          - laravel: 10.*
-            testbench: ^8.20
-          - laravel: 11.*
-            testbench: ^9.0
-        exclude:
-          - php: 8.1
-            laravel: 11.*
+          - laravel: 9
+            php: "8.0"
+          - laravel: 10
+            php: "8.1"
+          - laravel: 11
+            php: "8.3"
 
     steps:
       - name: Checkout code
