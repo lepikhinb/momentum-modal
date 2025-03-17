@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
+use Inertia\Support\Header;
+use Momentum\Modal\Support\ModalHeader;
 
 class Modal implements Responsable
 {
@@ -53,9 +55,9 @@ class Modal implements Responsable
         inertia()->share(['modal' => $this->component()]);
 
         // render background component on first visit
-        if (request()->header('X-Inertia') && request()->header('X-Inertia-Partial-Component')) {
+        if (request()->header(Header::INERTIA) && request()->header(Header::PARTIAL_COMPONENT)) {
             /** @phpstan-ignore-next-line */
-            return inertia()->render(request()->header('X-Inertia-Partial-Component'));
+            return inertia()->render(request()->header(Header::PARTIAL_COMPONENT));
         }
 
         /** @var Request $originalRequest */
@@ -108,20 +110,20 @@ class Modal implements Responsable
             'baseURL' => $this->baseURL,
             'redirectURL' => $this->redirectURL(),
             'props' => $this->props,
-            'key' => request()->header('X-Inertia-Modal-Key', Str::uuid()->toString()),
+            'key' => request()->header(ModalHeader::KEY, Str::uuid()->toString()),
             'nonce' => Str::uuid()->toString(),
         ];
     }
 
     protected function redirectURL(): string
     {
-        if (request()->header('X-Inertia-Modal-Redirect')) {
-            return request()->header('X-Inertia-Modal-Redirect');
+        if (request()->header(ModalHeader::REDIRECT)) {
+            return request()->header(ModalHeader::REDIRECT);
         }
 
         $referer = request()->headers->get('referer');
 
-        if (request()->header('X-Inertia') && $referer && $referer != url()->current()) {
+        if (request()->header(Header::INERTIA) && $referer && $referer != url()->current()) {
             return $referer;
         }
 

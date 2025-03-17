@@ -5,7 +5,9 @@ declare(strict_types=1);
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
+use Inertia\Support\Header;
 use Inertia\Testing\AssertableInertia;
+use Momentum\Modal\Support\ModalHeader;
 use Momentum\Modal\Tests\Stubs\ExampleController;
 use Momentum\Modal\Tests\Stubs\ExampleMiddleware;
 use function Pest\Laravel\from;
@@ -61,8 +63,8 @@ test('preserve background on inertia visits', function () {
 
     from($fromURL)
         ->get(route('users.tweets.show', [$user, $tweet]), [
-            'X-Inertia' => true,
-            'X-Inertia-Modal-Redirect' => $fromURL,
+            Header::INERTIA => true,
+            ModalHeader::REDIRECT => $fromURL,
         ])
         ->assertSuccessful()
         ->assertJsonPath('component', 'Home')
@@ -94,8 +96,8 @@ test('preserve query string for parent componentы', function () {
 
     from($fromURL)
         ->get(route('users.tweets.show', [$user, $tweet]), [
-            'X-Inertia' => true,
-            'X-Inertia-Modal-Redirect' => $fromURL,
+            Header::INERTIA => true,
+            ModalHeader::REDIRECT => $fromURL,
         ])
         ->assertJsonPath('component', 'Users/Show')
         ->assertJsonPath('props.page', '3')
