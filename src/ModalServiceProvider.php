@@ -17,7 +17,7 @@ class ModalServiceProvider extends ServiceProvider
             string $component,
             array|Arrayable $props = []
         ) {
-            return new Modal($component, $props);
+            return app()->makeWith(Modal::class, compact('component', 'props'));
         });
 
         $this->registerCompatibilityMacros();
@@ -32,12 +32,14 @@ class ModalServiceProvider extends ServiceProvider
             string $component,
             array|Arrayable $props = []
         ) {
-            return new Modal($component, $props);
+            return app()->makeWith(Modal::class, compact('component', 'props'));
         });
 
         Response::macro('stackable', function () {
-            /** @phpstan-ignore-next-line */
-            return new Modal($this->component, $this->props);
+            return app()->makeWith(Modal::class, [
+                'component' => $this->component,
+                'props' => $this->props,
+            ]);
         });
     }
 }

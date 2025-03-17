@@ -118,3 +118,16 @@ test('route parameters are bound correctly', function () {
                 ->where('modal.baseURL', route('users.show', $otherUser));
         });
 });
+
+test('modal implementation can be swapped via service container', function () {
+	$user = user();
+	$tweet = tweet($user);
+
+	$this->app->bind(Momentum\Modal\Modal::class, Momentum\Modal\Tests\Stubs\ExampleModal::class);
+
+	get(route('users.tweets.show', [$user, $tweet]))
+		->assertSuccessful()
+		->assertInertia(function (AssertableInertia $page) {
+			$page->component('Users/Show')->where('modal.foo', 'bar');
+		});
+});
