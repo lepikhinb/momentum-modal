@@ -179,6 +179,9 @@ Route::get('{user}/{tweet}', ShowTweet::class)
 
 Render a modal from a controller. Specify the `base` route to render the background when the modal is accessed directly.
 
+> [!WARNING]
+> When accessing a modal directly, only the middleware stack of the modal route is executed, not that of the base route. Make sure to include any necessary middleware in the modal route as well to ensure that the user accessing the modal is also authorized to access the base route.
+
 ```php
 class ShowTweet extends Controller
 {
